@@ -32,7 +32,39 @@ Afin de répondre aux différents problèmes, vous allez avoir besoin de créer 
 À vous de jouer ! Écrivez les requêtes MongoDB permettant de résoudre les problèmes posés.
 
 ```
-TODO : ajouter les requêtes MongoDB ici
+
+use 911-calls
+
+db.calls.find({
+   location: {
+     $near: {
+       $geometry: {
+          type: "Point" ,
+          coordinates: [-75.283783, 40.241493]
+       },
+       $maxDistance: 500
+     }
+   }
+}).count()
+
+
+db.calls.aggregate([
+    {"$group" : {_id:{cat:"$cat"}, count:{$sum:1}}}
+])
+
+db.calls.aggregate([
+    {"$group" : {_id:{year:"$year",month:"$month"}, count:{$sum:1}}},
+    {$sort:{"count":-1}},
+    {$limit:3}
+])
+
+db.calls.aggregate([
+    {$match: {$text: {$search:"OVERDOSE"}}},
+    {"$group" : {_id:{twp:"$twp"}, count:{$sum:1}}},
+    {$sort:{"count":-1}},
+    {$limit:3}
+])
+
 ```
 
 Vous allez sûrement avoir besoin de vous inspirer des points suivants de la documentation :

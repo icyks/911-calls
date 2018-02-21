@@ -29,6 +29,20 @@ client.indices.create({ index: "911calls" }, (err, resp) => {
   			}
   		}
   	}); 
+  client.indices.putMapping({
+      index:"911calls",
+      type: "call",
+      body: {
+        call: {
+          properties: {
+            time : {
+              type: "date",
+              format: "yyyy-MM-dd HH:mm:ss"
+            }
+          }
+        }
+      }
+    }); 
 });
 
 
