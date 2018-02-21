@@ -16,10 +16,10 @@ db.calls.find({
    }
 }).count()
 
-db.calls.find({"cat":"EMS"}).count()
-db.calls.find({"cat":"Fire"}).count()
-db.calls.find({"cat":"Traffic"}).count()
 
+db.calls.aggregate([
+    {"$group" : {_id:{cat:"$cat"}, count:{$sum:1}}}
+])
 
 db.calls.aggregate([
     {"$group" : {_id:{year:"$year",month:"$month"}, count:{$sum:1}}},
