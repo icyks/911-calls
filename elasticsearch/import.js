@@ -10,14 +10,14 @@ var client = new elasticsearch.Client({
 
 
 // Création de l'indice
-client.indices.create({ index: '911calls' }, (err, resp) => {
+client.indices.create({ index: "911calls" }, (err, resp) => {
   if (err) 
   	{ 
   		console.trace(err.message);
   		return;
   	}
   client.indices.putMapping({
-  		index:'911calls',
+  		index:"911calls",
   		type: "call",
   		body: {
   			call: {
@@ -42,7 +42,7 @@ fs.createReadStream('../911.csv')
 		calls.push({
                 location:{
                 	lon:+data.lng,
-                    lat: +data.lat
+                  lat: +data.lat
                 },
                 desc:data.desc,
                 zip:data.zip,
@@ -70,7 +70,7 @@ function createBulkInsertQuery(calls) {
   const body = calls.reduce((acc, call) => {
     const { location, desc,zip,cat,title,date,time,twp,addr,e } = call;
     acc.push({ index: { _index: '911calls', _type: 'call'} })
-    acc.push({ location, desc,zip,cat,title,date,time,twp,addr,e })
+    acc.push(call)
     return acc
   }, []);
 
