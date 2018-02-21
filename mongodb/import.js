@@ -16,8 +16,6 @@ var insertCalls = function(db, callback) {
             let timeStamp = data.timeStamp.split(" ");
             let date = timeStamp[0].split("-");
             var call = {
-                "lat":data.lat,
-                "lng":data.lng,
                 "location": {
                     type: "Point",
                     coordinates: [+data.lng,+data.lat]
@@ -43,60 +41,18 @@ var insertCalls = function(db, callback) {
         });
 }
 
-var createTextIndex = function(db, callback) {
-  // Get the documents collection
-  var collection = db.collection('calls');
-  // Create the index
-  collection.createIndex(
-    { title : "text" }, function(err, result) {
-    console.log(result + " textindex created");
-    callback(result);
-  });
-};
 
-var create2DSphereIndex = function(db, callback) {
-  // Get the documents collection
-  var collection = db.collection('calls');
-  // Create the index
-  collection.createIndex(
-    { location : "2dsphere" }, function(err, result) {
-        if (err) {
-            console.log(err);
-            throw err;
-        }
-    console.log(result+ "2dsphereindex created");
-    callback(result);
-  });
-};
 
-var createIndexMonth = function(db, callback) {
-  // Get the documents collection
-  var collection = db.collection('calls');
-  // Create the index
-  collection.createIndex(
-    { month : 1 }, function(err, result) {
-    console.log(result + "index created");
-    callback(result);
-  });
-};
 
-var createIndexYear = function(db, callback) {
+var createIndex = function(db,collection,field,type,callback) {
   // Get the documents collection
-  var collection = db.collection('calls');
+  var collection = db.collection(collection); 
+  const obj = {};
+  obj[field] = type;
   // Create the index
   collection.createIndex(
-    { year : 1 }, function(err, result) {
-    console.log(result + "index created");
-    callback(result);
-  });
-};
-var createIndexCat = function(db, callback) {
-  // Get the documents collection
-  var collection = db.collection('calls');
-  // Create the index
-  collection.createIndex(
-    { cat : 1 }, function(err, result) {
-    console.log(result + "index created");
+    obj, function(err, result) {
+    console.log(result + " index created");
     callback(result);
   });
 };
@@ -104,11 +60,11 @@ var createIndexCat = function(db, callback) {
 MongoClient.connect(mongoUrl, (err, db) => {
     insertCalls(db, result => {
         console.log(`${result.insertedCount} calls inserted`);
-        createTextIndex(db, result1=> {
-            createIndexCat(db, result2=> {
-                createIndexMonth(db, result3=> {
-                    createIndexYear(db, result4=> {
-                        create2DSphereIndex(db, result5=> {
+        createIndex(db,"calls","title","text", result=> {
+            createIndex(db,"calls","cat",1, result=> {
+                createIndex(db,"calls","month",1, result=> {
+                    createIndex(db,"calls","year",1, result=> {
+                        createIndex(db,"calls","location","2dsphere", result=> {
                             db.close();
                         })
                     })
